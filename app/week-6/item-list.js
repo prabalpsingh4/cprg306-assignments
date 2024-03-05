@@ -1,24 +1,25 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Item from "./item"; 
-import itemsData from "./item.json"; 
+import Item from "./item";
 
-const ItemList = () => {
-  const [sortBy, setSortBy] = useState("name"); 
-  const [items, setItems] = useState(itemsData);
+const ItemList = ({ items }) => {
+  const [sortedItems, setSortedItems] = useState([]);
+  const [sortBy, setSortBy] = useState("name");
 
   useEffect(() => {
-    handleSort();
-  }, [sortBy]); 
-  const handleSort = () => {
-    setItems([...items].sort((a, b) => {
+    handleSort(items);
+  }, [items, sortBy]); 
+
+  const handleSort = (itemsToSort) => {
+    const sortedItemsCopy = [...itemsToSort].sort((a, b) => {
       if (sortBy === "name") {
-        return a.name.localeCompare(b.name); 
+        return a.name.localeCompare(b.name);
       } else if (sortBy === "category") {
         return a.category.localeCompare(b.category);
       }
       return 0;
-    }));
+    });
+    setSortedItems(sortedItemsCopy);
   };
 
   const handleSortByName = () => {
@@ -30,7 +31,7 @@ const ItemList = () => {
   };
 
   return (
-    <div className="container px-3" style={{ width: "30%" }}>
+    <div className="container px-3" style={{ width: "30%", marginTop: "-20px" }}>
       <div style={{ display: "flex", marginBottom: "10px" }}>
         <button
           onClick={handleSortByName}
@@ -57,21 +58,8 @@ const ItemList = () => {
         </button>
       </div>
 
-      <div>
-        <label htmlFor="sortBy">Sort by:</label>
-        <select
-          id="sortBy"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          style={{ width: "100%" }}
-        >
-          <option value="name">Name</option>
-          <option value="category">Category</option>
-        </select>
-      </div>
-
       <ul className="w-auto">
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item key={item.id} {...item} />
         ))}
       </ul>
